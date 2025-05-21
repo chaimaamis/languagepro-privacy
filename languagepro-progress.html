@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Envoyer Progrès – LanguagePro</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    label { display: block; margin-top: 10px; }
+    input, select { padding: 8px; margin-top: 5px; width: 100%; max-width: 300px; }
+    button { margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+    .message { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h1>Envoyer mes progrès à LanguagePro</h1>
+
+  <form id="progressForm">
+    <label>Nom d'utilisateur :
+      <input type="text" id="username" required>
+    </label>
+
+    <label>Langue étudiée :
+      <input type="text" id="language" required>
+    </label>
+
+    <label>Niveau :
+      <select id="level" required>
+        <option value="A1">A1</option>
+        <option value="A2">A2</option>
+        <option value="B1">B1</option>
+        <option value="B2">B2</option>
+        <option value="C1">C1</option>
+      </select>
+    </label>
+
+    <label>Score (% de réussite) :
+      <input type="number" id="score" min="0" max="100" required>
+    </label>
+
+    <button type="submit">Envoyer à Zapier</button>
+  </form>
+
+  <div class="message" id="resultMessage"></div>
+
+  <script>
+    document.getElementById("progressForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const data = {
+        username: document.getElementById("username").value,
+        language: document.getElementById("language").value,
+        level: document.getElementById("level").value,
+        score: parseInt(document.getElementById("score").value)
+      };
+
+      const webhookURL = "https://hooks.zapier.com/hooks/catch/23023476/2jb3wll";
+
+      try {
+        const response = await fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          document.getElementById("resultMessage").textContent = "✅ Progrès envoyés avec succès !";
+          document.getElementById("progressForm").reset();
+        } else {
+          document.getElementById("resultMessage").textContent = "❌ Une erreur est survenue lors de l'envoi.";
+        }
+      } catch (error) {
+        document.getElementById("resultMessage").textContent = "❌ Problème de connexion avec Zapier.";
+      }
+    });
+  </script>
+
+</body>
+</html>
